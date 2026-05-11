@@ -23,6 +23,7 @@ export interface MonitorTask {
   nextExecuteAt?: string;
   totalExecutions: number;
   changesDetected: number;
+  lastChangeSummary?: string;
   notifyDingTalk: boolean;
   dingTalkWebhook?: string;
   createdAt: string;

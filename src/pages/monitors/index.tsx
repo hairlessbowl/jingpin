@@ -150,15 +150,23 @@ export const MonitorListPage = () => {
     {
       title: '执行统计',
       key: 'stats',
-      width: 140,
+      width: 200,
       render: (_, record) => (
-        <Space direction="vertical" size={0}>
+        <Space direction="vertical" size={2}>
           <Typography.Text style={{ fontSize: 12, color: '#595959' }}>
             共执行 <strong>{record.totalExecutions}</strong> 次
           </Typography.Text>
           <Typography.Text style={{ fontSize: 12, color: record.changesDetected > 0 ? '#FF4D4F' : '#8C8C8C' }}>
             检测到 <strong>{record.changesDetected}</strong> 次变化
           </Typography.Text>
+          {record.lastChangeSummary && (
+            <Typography.Text
+              style={{ fontSize: 11, color: '#8C8C8C', display: 'block', marginTop: 2 }}
+              ellipsis={{ tooltip: record.lastChangeSummary }}
+            >
+              最近：{record.lastChangeSummary}
+            </Typography.Text>
+          )}
         </Space>
       ),
     },
