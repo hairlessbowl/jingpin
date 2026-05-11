@@ -1,4 +1,5 @@
 import type { MonitorTask, MonitorExecution, ExecutionReport } from '../types';
+import { request } from '@/services/request';
 
 const COMPETITOR_SCREENSHOT_URLS = [
   'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=375&h=667&fit=crop',
@@ -239,43 +240,67 @@ const mockExecutions: MonitorExecution[] = [
 ];
 
 export const getMonitorList = async (): Promise<MonitorTask[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  return [...mockMonitors];
+  try {
+    return await request.get('/api/monitors');
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    return [...mockMonitors];
+  }
 };
 
 export const getMonitorDetail = async (id: string): Promise<MonitorTask | null> => {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  return mockMonitors.find((m) => m.id === id) ?? null;
+  try {
+    return await request.get(`/api/monitors/${id}`);
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    return mockMonitors.find((m) => m.id === id) ?? null;
+  }
 };
 
 export const getMonitorExecutions = async (monitorId: string): Promise<MonitorExecution[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return mockExecutions.filter((e) => e.monitorId === monitorId);
+  try {
+    return await request.get(`/api/monitors/${monitorId}/executions`);
+  } catch {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return mockExecutions.filter((e) => e.monitorId === monitorId);
+  }
 };
 
 export const createMonitor = async (
   params: Omit<MonitorTask, 'id' | 'totalExecutions' | 'changesDetected' | 'createdAt'>
 ): Promise<MonitorTask> => {
-  const newMonitor: MonitorTask = {
-    ...params,
-    id: `monitor_${Date.now()}`,
-    totalExecutions: 0,
-    changesDetected: 0,
-    createdAt: new Date().toISOString(),
-  };
-  mockMonitors.unshift(newMonitor);
-  return newMonitor;
+  try {
+    return await request.post('/api/monitors', params);
+  } catch {
+    const newMonitor: MonitorTask = {
+      ...params,
+      id: `monitor_${Date.now()}`,
+      totalExecutions: 0,
+      changesDetected: 0,
+      createdAt: new Date().toISOString(),
+    };
+    mockMonitors.unshift(newMonitor);
+    return newMonitor;
+  }
 };
 
 export const updateMonitorStatus = async (
   id: string,
   status: MonitorTask['status']
 ): Promise<void> => {
-  const monitor = mockMonitors.find((m) => m.id === id);
-  if (monitor) monitor.status = status;
+  try {
+    await request.put(`/api/monitors/${id}`, { status });
+  } catch {
+    const monitor = mockMonitors.find((m) => m.id === id);
+    if (monitor) monitor.status = status;
+  }
 };
 
 export const deleteMonitor = async (id: string): Promise<void> => {
-  const index = mockMonitors.findIndex((m) => m.id === id);
-  if (index !== -1) mockMonitors.splice(index, 1);
+  try {
+    await request.delete(`/api/monitors/${id}`);
+  } catch {
+    const index = mockMonitors.findIndex((m) => m.id === id);
+    if (index !== -1) mockMonitors.splice(index, 1);
+  }
 };

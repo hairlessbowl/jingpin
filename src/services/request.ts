@@ -11,6 +11,7 @@ export const request = {
     const fullUrl = searchParams.toString() ? `${url}?${searchParams}` : url;
     const response = await fetch(fullUrl);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 204) return undefined as T;
     return response.json();
   },
 
@@ -21,6 +22,7 @@ export const request = {
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 204) return undefined as T;
     return response.json();
   },
 
@@ -31,12 +33,14 @@ export const request = {
       body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 204) return undefined as T;
     return response.json();
   },
 
   delete: async <T>(url: string): Promise<T> => {
     const response = await fetch(url, { method: 'DELETE' });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.status === 204) return undefined as T;
     return response.json();
   },
 };

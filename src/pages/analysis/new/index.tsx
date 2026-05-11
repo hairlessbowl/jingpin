@@ -157,6 +157,17 @@ const pickRandom = (): MockRecognitionData =>
 const pickRandomOwnPage = (): OwnPageRecognitionResult =>
   MOCK_OWN_PAGE_RECOGNITION[Math.floor(Math.random() * MOCK_OWN_PAGE_RECOGNITION.length)];
 
+const fileToBase64 = async (file?: RcFile) => {
+  if (!file) return '';
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  return dataUrl.split(',')[1] ?? '';
+};
+
 const KeyframeStrip = ({
   keyframes,
   collapsed,
@@ -437,11 +448,28 @@ export const NewAnalysisPage = () => {
     try {
       const values = await form.validateFields();
       setSubmitting(true);
+      const competitorMaterials = await Promise.all(competitorFileList.map(async (file) => ({
+        category: 'competitor' as const,
+        fileName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        sizeBytes: file.size || 0,
+        contentBase64: await fileToBase64(file.originFileObj),
+        recognition: recognitionResults.get(file.uid) as unknown as Record<string, unknown> | undefined,
+      })));
+      const ownMaterials = await Promise.all(ownFileList.map(async (file) => ({
+        category: 'own' as const,
+        fileName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        sizeBytes: file.size || 0,
+        contentBase64: await fileToBase64(file.originFileObj),
+        recognition: ownRecognitionResults.get(file.uid) as unknown as Record<string, unknown> | undefined,
+      })));
       const task = await createAnalysisTask({
         competitorName: values.competitorName,
         pageType: values.pageType,
         deviceType: values.deviceType,
         brief: { businessScenario: values.businessScenario, targetUser: values.targetUser, optimizationGoal: values.optimizationGoal, currentProblem: values.currentProblem ?? '' },
+        materials: [...competitorMaterials, ...ownMaterials].filter((item) => item.contentBase64),
       });
       message.success('分析任务已提交，正在处理...');
       navigate(`/analysis/result/${task.id}`);

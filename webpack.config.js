@@ -39,6 +39,13 @@ module.exports = {
   devServer: {
     port: 3025,
     allowedHosts: ['all', '.alibaba-inc.com'],
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+    ],
     historyApiFallback: {
       index: '/index.html',
       rewrites: [{ from: /^\/_p\/\d+\//, to: '/index.html' }],
