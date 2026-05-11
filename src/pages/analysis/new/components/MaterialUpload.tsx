@@ -1,17 +1,38 @@
-import { Upload, Button, Typography, Space, Tag } from 'antd';
-import { InboxOutlined, FileImageOutlined, VideoCameraOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Upload, Typography, Space, Tag, Spin } from 'antd';
+import {
+  InboxOutlined, FileImageOutlined, VideoCameraOutlined,
+  DeleteOutlined, CheckCircleOutlined, LoadingOutlined,
+} from '@ant-design/icons';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 const { Dragger } = Upload;
 
+interface RecognitionResult {
+  competitor: string;
+  flowOrPage: string;
+  confidence: number;
+}
+
 interface MaterialUploadProps {
   fileList: UploadFile[];
   onChange: (files: UploadFile[]) => void;
+  recognitionResults?: Map<string, RecognitionResult>;
+  recognizingUids?: Set<string>;
 }
 
-export const MaterialUpload = ({ fileList, onChange }: MaterialUploadProps) => {
-  const handleRemove = (file: UploadFile) => {
-    onChange(fileList.filter((f) => f.uid !== file.uid));
+const MOCK_RECOGNITION_MAP: Record<string, RecognitionResult> = {
+  video: { competitor: '美团外卖', flowOrPage: '外卖下单流程', confidence: 94 },
+  image: { competitor: '拼多多', flowOrPage: '商品详情页', confidence: 89 },
+};
+
+export const MaterialUpload = ({
+  fileList,
+  onChange,
+  recognitionResults = new Map(),
+  recognizingUids = new Set(),
+}: MaterialUploadProps) => {
+  const handleRemove = (uid: string) => {
+    onChange(fileList.filter((f) => f.uid !== uid));
   };
 
   return (
@@ -56,44 +77,89 @@ export const MaterialUpload = ({ fileList, onChange }: MaterialUploadProps) => {
           <Space direction="vertical" size={8} style={{ width: '100%' }}>
             {fileList.map((file) => {
               const isVideo = file.type?.startsWith('video/');
+              const isRecognizing = recognizingUids.has(file.uid);
+              const recognition = recognitionResults.get(file.uid);
+
               return (
                 <div
                   key={file.uid}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 14px',
-                    background: '#FAFAFA',
-                    borderRadius: 6,
-                    border: '1px solid #F0F0F0',
+                    padding: '12px 14px',
+                    background: recognition ? '#F6FFED' : '#FAFAFA',
+                    borderRadius: 8,
+                    border: `1px solid ${recognition ? '#B7EB8F' : '#F0F0F0'}`,
+                    transition: 'all 0.3s',
                   }}
                 >
-                  <Space size={10}>
-                    {isVideo ? (
-                      <VideoCameraOutlined style={{ color: '#722ED1', fontSize: 18 }} />
-                    ) : (
-                      <FileImageOutlined style={{ color: '#1677FF', fontSize: 18 }} />
-                    )}
-                    <div>
-                      <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>
-                        {file.name}
-                      </Typography.Text>
-                      <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>
-                        {file.size ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ''}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Space size={10}>
+                      {isVideo ? (
+                        <VideoCameraOutlined style={{ color: '#722ED1', fontSize: 18 }} />
+                      ) : (
+                        <FileImageOutlined style={{ color: '#1677FF', fontSize: 18 }} />
+                      )}
+                      <div>
+                        <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>
+                          {file.name}
+                        </Typography.Text>
+                        <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>
+                          {file.size ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ''}
+                        </Typography.Text>
+                      </div>
+                      <Tag color={isVideo ? 'purple' : 'blue'} style={{ fontSize: 11 }}>
+                        {isVideo ? '录屏' : '截图'}
+                      </Tag>
+                    </Space>
+                    <div
+                      style={{ cursor: 'pointer', color: '#FF4D4F', padding: '4px 8px' }}
+                      onClick={() => handleRemove(file.uid)}
+                    >
+                      <DeleteOutlined />
+                    </div>
+                  </div>
+
+                  {isRecognizing && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: '8px 12px',
+                        background: '#E6F4FF',
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                      }}
+                    >
+                      <Spin indicator={<LoadingOutlined style={{ fontSize: 13, color: '#1677FF' }} />} />
+                      <Typography.Text style={{ fontSize: 12, color: '#1677FF' }}>
+                        AI 正在识别素材内容...
                       </Typography.Text>
                     </div>
-                    <Tag color={isVideo ? 'purple' : 'blue'} style={{ fontSize: 11 }}>
-                      {isVideo ? '录屏' : '截图'}
-                    </Tag>
-                  </Space>
-                  <Button
-                    type="text"
-                    icon={<DeleteOutlined />}
-                    size="small"
-                    danger
-                    onClick={() => handleRemove(file)}
-                  />
+                  )}
+
+                  {recognition && !isRecognizing && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: '8px 12px',
+                        background: '#F6FFED',
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Space size={6}>
+                        <CheckCircleOutlined style={{ color: '#52C41A', fontSize: 13 }} />
+                        <Typography.Text style={{ fontSize: 12, color: '#389E0D' }}>
+                          识别为：<strong>{recognition.competitor}</strong> · {recognition.flowOrPage}
+                        </Typography.Text>
+                      </Space>
+                      <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>
+                        置信度 {recognition.confidence}%
+                      </Typography.Text>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -103,3 +169,6 @@ export const MaterialUpload = ({ fileList, onChange }: MaterialUploadProps) => {
     </Space>
   );
 };
+
+export type { RecognitionResult };
+export { MOCK_RECOGNITION_MAP };

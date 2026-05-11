@@ -198,6 +198,8 @@ export const getTaskDetail = async (id: string): Promise<AnalysisTask | null> =>
   return null;
 };
 
+const MOCK_RESULT_TEMPLATE = mockTasks[0].result;
+
 export const createAnalysisTask = async (params: {
   competitorName: string;
   pageType: string;
@@ -208,13 +210,15 @@ export const createAnalysisTask = async (params: {
     const newTask: AnalysisTask = {
       id: `task_${Date.now()}`,
       type: 'manual',
-      status: 'pending',
+      status: 'completed',
       competitorName: params.competitorName,
       pageType: params.pageType,
       deviceType: params.deviceType as 'mobile' | 'desktop' | 'tablet',
       materialCount: 1,
       createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
       brief: params.brief,
+      result: MOCK_RESULT_TEMPLATE,
     };
     mockTasks.unshift(newTask);
     return newTask;

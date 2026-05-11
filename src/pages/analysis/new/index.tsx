@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, Steps, Button, Space, App as AntApp, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 import { PageContainer } from '@/components/PageContainer';
-import { MaterialUpload } from './components/MaterialUpload';
+import { MaterialUpload, type RecognitionResult } from './components/MaterialUpload';
 import { BriefForm } from './components/BriefForm';
 import { ProgressView } from './components/ProgressView';
 import { createAnalysisTask } from '@/pages/analysis/services/analysisService';
@@ -15,7 +15,20 @@ const STEPS = [
   { title: 'AI 分析中', description: '自动拆解分析' },
 ];
 
-const MOCK_RECOGNITION_RESULTS = [
+interface MockRecognitionData {
+  competitorName: string;
+  pageType: string;
+  deviceType: string;
+  brief: {
+    businessScenario: string;
+    targetUser: string;
+    optimizationGoal: string;
+    currentProblem: string;
+  };
+  fileRecognition: RecognitionResult;
+}
+
+const MOCK_RECOGNITION_POOL: MockRecognitionData[] = [
   {
     competitorName: '拼多多',
     pageType: '商品详情页',
@@ -26,6 +39,7 @@ const MOCK_RECOGNITION_RESULTS = [
       optimizationGoal: '提升加购和购买转化率',
       currentProblem: '',
     },
+    fileRecognition: { competitor: '拼多多', flowOrPage: '商品详情页', confidence: 91 },
   },
   {
     competitorName: '京东',
@@ -37,10 +51,11 @@ const MOCK_RECOGNITION_RESULTS = [
       optimizationGoal: '提升活动页 GMV 和用户参与率',
       currentProblem: '',
     },
+    fileRecognition: { competitor: '京东', flowOrPage: '活动页', confidence: 87 },
   },
   {
     competitorName: '美团',
-    pageType: '下单确认页',
+    pageType: '外卖下单流程',
     deviceType: 'mobile',
     brief: {
       businessScenario: '外卖下单确认页，展示订单详情、配送信息和支付方式，引导用户完成支付',
@@ -48,13 +63,12 @@ const MOCK_RECOGNITION_RESULTS = [
       optimizationGoal: '提升支付成功率，降低下单流程跳出率',
       currentProblem: '',
     },
+    fileRecognition: { competitor: '美团外卖', flowOrPage: '外卖下单流程', confidence: 94 },
   },
 ];
 
-const simulateRecognition = async (): Promise<typeof MOCK_RECOGNITION_RESULTS[0]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1800));
-  return MOCK_RECOGNITION_RESULTS[Math.floor(Math.random() * MOCK_RECOGNITION_RESULTS.length)];
-};
+const pickRandomRecognition = (): MockRecognitionData =>
+  MOCK_RECOGNITION_POOL[Math.floor(Math.random() * MOCK_RECOGNITION_POOL.length)];
 
 export const NewAnalysisPage = () => {
   const navigate = useNavigate();
@@ -64,10 +78,39 @@ export const NewAnalysisPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [analysisStep, setAnalysisStep] = useState(0);
-  const [createdTaskId, setCreatedTaskId] = useState<string | null>(null);
   const [recognizing, setRecognizing] = useState(false);
 
-  const handleNextFromUpload = async () => {
+  const [recognizingUids, setRecognizingUids] = useState<Set<string>>(new Set());
+  const [recognitionResults, setRecognitionResults] = useState<Map<string, RecognitionResult>>(new Map());
+  const pendingRecognitionRef = useRef<MockRecognitionData | null>(null);
+
+  const handleFilesChange = (newFiles: UploadFile[]) => {
+    const addedFiles = newFiles.filter((f) => !fileList.some((existing) => existing.uid === f.uid));
+    setFileList(newFiles);
+
+    addedFiles.forEach((file) => {
+      const uid = file.uid;
+      setRecognizingUids((prev) => new Set(prev).add(uid));
+
+      const recognized = pickRandomRecognition();
+      pendingRecognitionRef.current = recognized;
+
+      setTimeout(() => {
+        setRecognizingUids((prev) => {
+          const next = new Set(prev);
+          next.delete(uid);
+          return next;
+        });
+        setRecognitionResults((prev) => {
+          const next = new Map(prev);
+          next.set(uid, recognized.fileRecognition);
+          return next;
+        });
+      }, 1200 + Math.random() * 600);
+    });
+  };
+
+  const handleNextFromUpload = () => {
     if (fileList.length === 0) {
       message.warning('请至少上传一个素材文件');
       return;
@@ -75,18 +118,17 @@ export const NewAnalysisPage = () => {
     setCurrentStep(1);
     setRecognizing(true);
 
-    try {
-      const recognized = await simulateRecognition();
+    const recognized = pendingRecognitionRef.current ?? pickRandomRecognition();
+    setTimeout(() => {
       form.setFieldsValue({
         competitorName: recognized.competitorName,
         pageType: recognized.pageType,
         deviceType: recognized.deviceType,
         brief: recognized.brief,
       });
-      message.success('AI 已自动识别素材内容并填充，请确认后提交');
-    } finally {
       setRecognizing(false);
-    }
+      message.success('AI 已自动识别素材内容并填充，请确认后提交');
+    }, 600);
   };
 
   const handleSubmitBrief = async () => {
@@ -101,7 +143,6 @@ export const NewAnalysisPage = () => {
         deviceType: values.deviceType,
         brief: values.brief,
       });
-      setCreatedTaskId(task.id);
 
       const totalSteps = 5;
       for (let step = 0; step < totalSteps; step++) {
@@ -109,7 +150,7 @@ export const NewAnalysisPage = () => {
         setAnalysisStep(step + 1);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 400));
       message.success('分析完成！');
       navigate(`/analysis/result/${task.id}`);
     } catch {
@@ -123,7 +164,14 @@ export const NewAnalysisPage = () => {
 
   const renderStepContent = () => {
     if (currentStep === 0) {
-      return <MaterialUpload fileList={fileList} onChange={setFileList} />;
+      return (
+        <MaterialUpload
+          fileList={fileList}
+          onChange={handleFilesChange}
+          recognitionResults={recognitionResults}
+          recognizingUids={recognizingUids}
+        />
+      );
     }
     if (currentStep === 1) {
       return <BriefForm form={form} recognizing={recognizing} />;

@@ -1,6 +1,7 @@
-import { Card, Button, Row, Col, Typography, Space } from 'antd';
+import { Card, Button, Row, Col, Typography, Space, Form } from 'antd';
 import { PlusOutlined, MonitorOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
@@ -10,6 +11,8 @@ import { StatCards } from './components/StatCards';
 import { RecentTaskList } from './components/RecentTaskList';
 import { CompetitorChangeSummary } from './components/CompetitorChangeSummary';
 import { useDashboardData } from './hooks/useDashboardData';
+import { MonitorFormModal } from '@/pages/monitors/components/MonitorFormModal';
+import { createMonitor } from '@/pages/monitors/services/monitorService';
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -17,6 +20,31 @@ dayjs.locale('zh-cn');
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { data, loading } = useDashboardData();
+  const [monitorModalOpen, setMonitorModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form] = Form.useForm();
+
+  const handleCreateMonitor = async (values: Record<string, unknown>) => {
+    setSubmitting(true);
+    try {
+      await createMonitor({
+        name: values.name as string,
+        competitorName: values.competitorName as string,
+        targetType: (values.targetType as 'page' | 'flow') ?? 'page',
+        targetUrl: values.targetUrl as string,
+        pageType: values.pageType as string,
+        deviceType: values.deviceType as 'mobile' | 'desktop' | 'tablet',
+        frequency: values.frequency as 'hourly' | 'daily' | 'weekly',
+        status: 'active',
+        notifyDingTalk: values.notifyDingTalk as boolean,
+        dingTalkWebhook: values.dingTalkWebhook as string | undefined,
+      });
+      setMonitorModalOpen(false);
+      form.resetFields();
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const headerExtra = (
     <Space size={8}>
@@ -27,9 +55,8 @@ export const DashboardPage = () => {
         新建分析
       </Button>
       <Button
-        type="primary"
         icon={<MonitorOutlined />}
-        onClick={() => navigate('/monitors')}
+        onClick={() => setMonitorModalOpen(true)}
       >
         新建监控
       </Button>
@@ -76,6 +103,14 @@ export const DashboardPage = () => {
           </Card>
         </Col>
       </Row>
+
+      <MonitorFormModal
+        open={monitorModalOpen}
+        onCancel={() => { setMonitorModalOpen(false); form.resetFields(); }}
+        onSubmit={handleCreateMonitor}
+        form={form}
+        loading={submitting}
+      />
     </PageContainer>
   );
 };
