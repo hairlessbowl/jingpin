@@ -13,15 +13,15 @@ export type TaskType = 'manual' | 'auto_monitor';
 export type DeviceType = 'desktop' | 'mobile' | 'tablet';
 
 export const PAGE_TYPES = [
-  { value: 'product_detail', label: '商品详情页' },
-  { value: 'shopping_cart', label: '购物车' },
-  { value: 'order_confirm', label: '下单确认页' },
-  { value: 'payment', label: '支付页' },
-  { value: 'homepage', label: '首页' },
-  { value: 'search_result', label: '搜索结果页' },
-  { value: 'activity', label: '活动页' },
-  { value: 'user_center', label: '个人中心' },
-  { value: 'other', label: '其他' },
+  '商品详情页',
+  '购物车',
+  '下单确认页',
+  '支付页',
+  '首页',
+  '搜索结果页',
+  '活动页',
+  '个人中心',
+  '其他',
 ] as const;
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
