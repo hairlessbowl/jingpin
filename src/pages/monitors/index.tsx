@@ -96,6 +96,7 @@ export const MonitorListPage = () => {
     {
       title: '监控名称',
       key: 'name',
+      width: 220,
       render: (_, record) => (
         <div>
           <Space size={6}>
@@ -130,7 +131,7 @@ export const MonitorListPage = () => {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      width: 100,
+      width: 90,
       render: (status: keyof typeof STATUS_CONFIG) => (
         <Badge
           status={STATUS_CONFIG[status].color as 'success' | 'warning' | 'default'}
@@ -174,7 +175,7 @@ export const MonitorListPage = () => {
       title: '最近执行',
       dataIndex: 'lastExecutedAt',
       key: 'lastExecutedAt',
-      width: 150,
+      width: 120,
       render: (time?: string) => (
         <Typography.Text style={{ fontSize: 13, color: '#595959' }}>
           {time ? dayjs(time).format('MM-DD HH:mm') : '未执行'}
@@ -185,7 +186,7 @@ export const MonitorListPage = () => {
       title: '下次执行',
       dataIndex: 'nextExecuteAt',
       key: 'nextExecuteAt',
-      width: 150,
+      width: 120,
       render: (time?: string) => (
         <Typography.Text style={{ fontSize: 13, color: '#595959' }}>
           {time ? dayjs(time).format('MM-DD HH:mm') : '-'}
