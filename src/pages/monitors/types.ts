@@ -1,10 +1,19 @@
 export type MonitorStatus = 'active' | 'paused' | 'stopped';
 export type MonitorFrequency = 'hourly' | 'daily' | 'weekly';
+export type MonitorTargetType = 'page' | 'flow';
+
+export interface FlowStep {
+  stepIndex: number;
+  stepName: string;
+  action: string;
+  screenshotUrl?: string;
+}
 
 export interface MonitorTask {
   id: string;
   name: string;
   competitorName: string;
+  targetType: MonitorTargetType;
   targetUrl: string;
   pageType: string;
   deviceType: 'mobile' | 'desktop' | 'tablet';
@@ -19,6 +28,29 @@ export interface MonitorTask {
   createdAt: string;
 }
 
+export interface ScreenshotCapture {
+  stepName: string;
+  screenshotUrl: string;
+  capturedAt: string;
+}
+
+export interface ExecutionChangeDetail {
+  dimension: string;
+  description: string;
+  beforeScreenshotUrl: string;
+  afterScreenshotUrl: string;
+  impact: 'high' | 'medium' | 'low';
+  beforeDescription: string;
+  afterDescription: string;
+}
+
+export interface ExecutionReport {
+  summary: string;
+  changeDetails: ExecutionChangeDetail[];
+  screenshots: ScreenshotCapture[];
+  recommendations: string[];
+}
+
 export interface MonitorExecution {
   id: string;
   monitorId: string;
@@ -28,4 +60,6 @@ export interface MonitorExecution {
   changeCount: number;
   status: 'success' | 'failed';
   errorMessage?: string;
+  screenshots?: ScreenshotCapture[];
+  report?: ExecutionReport;
 }

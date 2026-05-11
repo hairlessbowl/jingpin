@@ -1,6 +1,6 @@
 import { Upload, Button, Typography, Space, Tag } from 'antd';
 import { InboxOutlined, FileImageOutlined, VideoCameraOutlined, DeleteOutlined } from '@ant-design/icons';
-import type { UploadFile } from 'antd/es/upload/interface';
+import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 const { Dragger } = Upload;
 
@@ -25,7 +25,7 @@ export const MaterialUpload = ({ fileList, onChange }: MaterialUploadProps) => {
             uid: `${Date.now()}-${file.name}`,
             name: file.name,
             status: 'done',
-            originFileObj: file as File & { uid: string },
+            originFileObj: file as RcFile,
             size: file.size,
             type: file.type,
           };

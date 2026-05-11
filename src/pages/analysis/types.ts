@@ -65,6 +65,8 @@ export interface DiffItem {
   competitorApproach: string;
   ourApproach: string;
   impact: 'high' | 'medium' | 'low';
+  competitorScreenshotUrl?: string;
+  ourScreenshotUrl?: string;
 }
 
 export interface FusionSuggestion {

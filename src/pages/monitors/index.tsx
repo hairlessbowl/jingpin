@@ -8,6 +8,7 @@ import type { ColumnsType } from 'antd/es/table';
 import {
   PlusOutlined, PauseCircleOutlined, PlayCircleOutlined,
   DeleteOutlined, HistoryOutlined, BellOutlined,
+  FileTextOutlined, ApartmentOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -73,6 +74,7 @@ export const MonitorListPage = () => {
       await createMonitor({
         name: values.name as string,
         competitorName: values.competitorName as string,
+        targetType: (values.targetType as 'page' | 'flow') ?? 'page',
         targetUrl: values.targetUrl as string,
         pageType: values.pageType as string,
         deviceType: values.deviceType as 'mobile' | 'desktop' | 'tablet',
@@ -97,6 +99,15 @@ export const MonitorListPage = () => {
       render: (_, record) => (
         <div>
           <Space size={6}>
+            {record.targetType === 'flow' ? (
+              <Tooltip title="流程监控">
+                <ApartmentOutlined style={{ color: '#722ED1', fontSize: 13 }} />
+              </Tooltip>
+            ) : (
+              <Tooltip title="页面监控">
+                <FileTextOutlined style={{ color: '#1677FF', fontSize: 13 }} />
+              </Tooltip>
+            )}
             <Typography.Text strong style={{ fontSize: 13, color: '#262626' }}>
               {record.name}
             </Typography.Text>
@@ -106,8 +117,11 @@ export const MonitorListPage = () => {
               </Tooltip>
             )}
           </Space>
-          <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block' }}>
+          <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginLeft: 20 }}>
             {record.competitorName} · {record.pageType}
+            {record.targetType === 'flow' && (
+              <Tag color="purple" style={{ marginLeft: 6, fontSize: 10, lineHeight: '16px', padding: '0 4px' }}>流程</Tag>
+            )}
           </Typography.Text>
         </div>
       ),

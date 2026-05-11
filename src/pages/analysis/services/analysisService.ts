@@ -49,6 +49,8 @@ const mockTasks: AnalysisTask[] = [
             competitorApproach: '全屏沉浸式轮播图，图片占屏幕 60% 高度',
             ourApproach: '固定 300px 高度的商品图区域',
             impact: 'high',
+            competitorScreenshotUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=375&h=667&fit=crop',
+            ourScreenshotUrl: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=375&h=667&fit=crop',
           },
           {
             dimension: '价格展示',
@@ -56,6 +58,8 @@ const mockTasks: AnalysisTask[] = [
             competitorApproach: '红色大字现价 + 灰色划线原价 + 折扣标签三元素组合',
             ourApproach: '仅展示现价，无原价对比',
             impact: 'high',
+            competitorScreenshotUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=375&h=667&fit=crop',
+            ourScreenshotUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=375&h=667&fit=crop',
           },
           {
             dimension: '活动标签',
@@ -63,6 +67,8 @@ const mockTasks: AnalysisTask[] = [
             competitorApproach: '限时特惠、百亿补贴、倒计时等多种标签',
             ourApproach: '无活动标签',
             impact: 'medium',
+            competitorScreenshotUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=375&h=667&fit=crop',
+            ourScreenshotUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=375&h=667&fit=crop',
           },
         ],
         borrowablePoints: [

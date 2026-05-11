@@ -1,5 +1,5 @@
-import { Row, Col, Card, Tag, Typography, Space, List } from 'antd';
-import { ArrowRightOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Tag, Typography, Space, List, Image } from 'antd';
+import { ArrowRightOutlined, CheckCircleOutlined, CloseCircleOutlined, CameraOutlined } from '@ant-design/icons';
 import type { AnalysisResult } from '@/pages/analysis/types';
 
 interface DiffAnalysisProps {
@@ -31,9 +31,10 @@ export const DiffAnalysis = ({ result }: DiffAnalysisProps) => {
         style={{ borderRadius: 8, border: '1px solid #F0F0F0' }}
         size="small"
       >
-        <Space direction="vertical" size={12} style={{ width: '100%' }}>
+        <Space direction="vertical" size={16} style={{ width: '100%' }}>
           {diffAnalysis.differences.map((diff, index) => {
             const impactConfig = IMPACT_CONFIG[diff.impact];
+            const hasScreenshots = diff.competitorScreenshotUrl || diff.ourScreenshotUrl;
             return (
               <div
                 key={index}
@@ -44,7 +45,7 @@ export const DiffAnalysis = ({ result }: DiffAnalysisProps) => {
                   border: '1px solid #F0F0F0',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <Tag
                     style={{
                       background: impactConfig.bg,
@@ -62,6 +63,7 @@ export const DiffAnalysis = ({ result }: DiffAnalysisProps) => {
                     — {diff.description}
                   </Typography.Text>
                 </div>
+
                 <Row gutter={12}>
                   <Col span={11}>
                     <div
@@ -101,6 +103,125 @@ export const DiffAnalysis = ({ result }: DiffAnalysisProps) => {
                     </div>
                   </Col>
                 </Row>
+
+                {hasScreenshots && (
+                  <div style={{ marginTop: 14 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginBottom: 10,
+                        paddingBottom: 8,
+                        borderBottom: '1px dashed #F0F0F0',
+                      }}
+                    >
+                      <CameraOutlined style={{ color: '#8C8C8C', fontSize: 12 }} />
+                      <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>截图对比</Typography.Text>
+                    </div>
+                    <Image.PreviewGroup>
+                      <Row gutter={12} align="middle">
+                        <Col span={11}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div
+                              style={{
+                                display: 'inline-block',
+                                fontSize: 11,
+                                color: '#FA8C16',
+                                background: '#FFF7E6',
+                                padding: '2px 8px',
+                                borderRadius: 4,
+                                marginBottom: 8,
+                              }}
+                            >
+                              竞品截图
+                            </div>
+                            {diff.competitorScreenshotUrl ? (
+                              <Image
+                                src={diff.competitorScreenshotUrl}
+                                alt="竞品截图"
+                                style={{
+                                  width: '100%',
+                                  height: 180,
+                                  objectFit: 'cover',
+                                  borderRadius: 8,
+                                  border: '2px solid #FA8C1640',
+                                  display: 'block',
+                                }}
+                                preview={{ mask: '查看大图' }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  height: 180,
+                                  background: '#F5F5F5',
+                                  borderRadius: 8,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: '#BFBFBF',
+                                  fontSize: 12,
+                                }}
+                              >
+                                暂无截图
+                              </div>
+                            )}
+                          </div>
+                        </Col>
+                        <Col span={2} style={{ textAlign: 'center' }}>
+                          <ArrowRightOutlined style={{ color: '#D9D9D9', fontSize: 16 }} />
+                        </Col>
+                        <Col span={11}>
+                          <div style={{ textAlign: 'center' }}>
+                            <div
+                              style={{
+                                display: 'inline-block',
+                                fontSize: 11,
+                                color: '#8C8C8C',
+                                background: '#F5F5F5',
+                                padding: '2px 8px',
+                                borderRadius: 4,
+                                marginBottom: 8,
+                              }}
+                            >
+                              我方截图
+                            </div>
+                            {diff.ourScreenshotUrl ? (
+                              <Image
+                                src={diff.ourScreenshotUrl}
+                                alt="我方截图"
+                                style={{
+                                  width: '100%',
+                                  height: 180,
+                                  objectFit: 'cover',
+                                  borderRadius: 8,
+                                  border: '2px solid #D9D9D9',
+                                  display: 'block',
+                                }}
+                                preview={{ mask: '查看大图' }}
+                              />
+                            ) : (
+                              <div
+                                style={{
+                                  height: 180,
+                                  background: '#F5F5F5',
+                                  borderRadius: 8,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: '#BFBFBF',
+                                  fontSize: 12,
+                                }}
+                              >
+                                暂无截图
+                              </div>
+                            )}
+                          </div>
+                        </Col>
+                      </Row>
+                    </Image.PreviewGroup>
+                  </div>
+                )}
               </div>
             );
           })}
