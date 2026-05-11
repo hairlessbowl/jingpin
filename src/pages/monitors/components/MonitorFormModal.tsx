@@ -3,7 +3,7 @@ import type { FormInstance } from 'antd';
 import { PAGE_TYPES } from '@/types/common';
 import {
   ShopOutlined, OrderedListOutlined, EnvironmentOutlined,
-  SearchOutlined, ShoppingCartOutlined, CreditCardOutlined, CheckCircleOutlined,
+  SearchOutlined, ShoppingCartOutlined, CreditCardOutlined,
 } from '@ant-design/icons';
 
 interface MonitorFormModalProps {
@@ -37,13 +37,21 @@ const DEVICE_OPTIONS = [
 ];
 
 const MEITUAN_FLOW_STEPS = [
-  { icon: <ShopOutlined />, title: '打开首页', description: '进入美团外卖 H5 首页' },
-  { icon: <SearchOutlined />, title: '搜索商品', description: '搜索目标餐厅或商品' },
-  { icon: <ShopOutlined />, title: '进入商品详情', description: '点击商品查看详情页' },
-  { icon: <ShoppingCartOutlined />, title: '加入购物车', description: '选规格并加入购物车' },
-  { icon: <OrderedListOutlined />, title: '确认订单', description: '填写地址、备注等信息' },
-  { icon: <CreditCardOutlined />, title: '提交支付', description: '选择支付方式并提交（不真实支付）' },
+  { iconType: 'shop', title: '打开首页', description: '进入美团外卖 H5 首页' },
+  { iconType: 'search', title: '搜索商品', description: '搜索目标餐厅或商品' },
+  { iconType: 'shop', title: '进入商品详情', description: '点击商品查看详情页' },
+  { iconType: 'cart', title: '加入购物车', description: '选规格并加入购物车' },
+  { iconType: 'list', title: '确认订单', description: '填写地址、备注等信息' },
+  { iconType: 'card', title: '提交支付', description: '选择支付方式并提交（不真实支付）' },
 ];
+
+const FlowStepIcon = ({ iconType }: { iconType: string }) => {
+  if (iconType === 'search') return <SearchOutlined />;
+  if (iconType === 'cart') return <ShoppingCartOutlined />;
+  if (iconType === 'list') return <OrderedListOutlined />;
+  if (iconType === 'card') return <CreditCardOutlined />;
+  return <ShopOutlined />;
+};
 
 export const MonitorFormModal = ({
   open,
@@ -89,17 +97,16 @@ export const MonitorFormModal = ({
                   height: 'auto',
                   padding: '10px 16px',
                   borderRadius: 8,
-                  textAlign: 'center',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
                 }}
               >
                 <EnvironmentOutlined />
-                <span>页面监控</span>
-                <Typography.Text style={{ fontSize: 11, color: '#8C8C8C', display: 'block' }}>
-                  监控单个页面的 UI 变化
-                </Typography.Text>
+                <div>
+                  <div style={{ fontWeight: 500 }}>页面监控</div>
+                  <div style={{ fontSize: 11, color: '#8C8C8C', fontWeight: 400 }}>监控单个页面的 UI 变化</div>
+                </div>
               </Radio.Button>
               <Radio.Button
                 value="flow"
@@ -108,17 +115,16 @@ export const MonitorFormModal = ({
                   height: 'auto',
                   padding: '10px 16px',
                   borderRadius: 8,
-                  textAlign: 'center',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
                 }}
               >
                 <OrderedListOutlined />
-                <span>流程监控</span>
-                <Typography.Text style={{ fontSize: 11, color: '#8C8C8C', display: 'block' }}>
-                  监控完整用户操作流程
-                </Typography.Text>
+                <div>
+                  <div style={{ fontWeight: 500 }}>流程监控</div>
+                  <div style={{ fontSize: 11, color: '#8C8C8C', fontWeight: 400 }}>监控完整用户操作流程</div>
+                </div>
               </Radio.Button>
             </Space>
           </Radio.Group>
@@ -196,14 +202,16 @@ export const MonitorFormModal = ({
                   </Typography.Text>
                 ),
                 description: (
-                  <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>
-                    {step.description}
+                  <Space size={4}>
+                    <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>
+                      {step.description}
+                    </Typography.Text>
                     {index === 5 && (
-                      <Tag color="orange" style={{ marginLeft: 6, fontSize: 10 }}>不真实支付</Tag>
+                      <Tag color="orange" style={{ fontSize: 10 }}>不真实支付</Tag>
                     )}
-                  </Typography.Text>
+                  </Space>
                 ),
-                icon: <span style={{ fontSize: 14 }}>{step.icon}</span>,
+                icon: <FlowStepIcon iconType={step.iconType} />,
               }))}
             />
           </Card>
