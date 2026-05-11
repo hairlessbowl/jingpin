@@ -8,6 +8,7 @@ import 'dayjs/locale/zh-cn';
 import { PageContainer } from '@/components/PageContainer';
 import { StatCards } from './components/StatCards';
 import { RecentTaskList } from './components/RecentTaskList';
+import { CompetitorChangeSummary } from './components/CompetitorChangeSummary';
 import { useDashboardData } from './hooks/useDashboardData';
 
 dayjs.extend(relativeTime);
@@ -21,7 +22,7 @@ export const DashboardPage = () => {
     <PageContainer title="工作台">
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Row gutter={16}>
+          <Row gutter={16} align="stretch">
             <Col span={8}>
               <Card
                 hoverable
@@ -32,8 +33,9 @@ export const DashboardPage = () => {
                   background: 'linear-gradient(135deg, #E6F4FF 0%, #F0F7FF 100%)',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
+                  height: '100%',
                 }}
-                bodyStyle={{ padding: 24 }}
+                bodyStyle={{ padding: 24, height: '100%', boxSizing: 'border-box' }}
               >
                 <Space direction="vertical" size={8}>
                   <div
@@ -68,8 +70,9 @@ export const DashboardPage = () => {
                   background: 'linear-gradient(135deg, #FFF7E6 0%, #FFFBF0 100%)',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
+                  height: '100%',
                 }}
-                bodyStyle={{ padding: 24 }}
+                bodyStyle={{ padding: 24, height: '100%', boxSizing: 'border-box' }}
               >
                 <Space direction="vertical" size={8}>
                   <div
@@ -100,8 +103,9 @@ export const DashboardPage = () => {
                   borderRadius: 8,
                   border: '1px solid #F0F0F0',
                   background: '#FAFAFA',
+                  height: '100%',
                 }}
-                bodyStyle={{ padding: 24 }}
+                bodyStyle={{ padding: 24, height: '100%', boxSizing: 'border-box' }}
               >
                 <Typography.Text style={{ color: '#8C8C8C', fontSize: 12, display: 'block', marginBottom: 8 }}>
                   监控动态
@@ -142,6 +146,10 @@ export const DashboardPage = () => {
             weeklyChanges={data?.stats.weeklyChanges ?? 0}
             loading={loading}
           />
+        </Col>
+
+        <Col span={24}>
+          <CompetitorChangeSummary />
         </Col>
 
         <Col span={24}>
