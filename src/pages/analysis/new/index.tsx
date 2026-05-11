@@ -8,6 +8,7 @@ import {
   FileImageOutlined, VideoCameraOutlined, DeleteOutlined,
   CheckCircleOutlined, LoadingOutlined, PlayCircleOutlined, PlusOutlined,
   MergeCellsOutlined, SwapOutlined, DownOutlined, UpOutlined, UploadOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
@@ -485,14 +486,36 @@ export const NewAnalysisPage = () => {
                 </Col>
               </Row>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: competitorFileList.length > 0 ? 12 : 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <Typography.Text style={{ fontSize: 13, color: '#595959' }}>竞品截图 / 录屏</Typography.Text>
-                <Upload multiple accept="image/*,video/*" beforeUpload={handleCompetitorUpload} showUploadList={false}>
-                  <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#FA8C16', color: '#FA8C16' }}>
-                    上传素材
-                  </Button>
-                </Upload>
+                {competitorFileList.length > 0 && (
+                  <Upload multiple accept="image/*,video/*" beforeUpload={handleCompetitorUpload} showUploadList={false}>
+                    <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#FA8C16', color: '#FA8C16' }}>
+                      上传素材
+                    </Button>
+                  </Upload>
+                )}
               </div>
+
+              {competitorFileList.length === 0 && (
+                <Upload.Dragger
+                  multiple
+                  accept="image/*,video/*"
+                  beforeUpload={handleCompetitorUpload}
+                  showUploadList={false}
+                  style={{ borderRadius: 8, borderColor: '#FA8C16', background: '#FFFBF5', marginBottom: 0 }}
+                >
+                  <div style={{ padding: '10px 0' }}>
+                    <InboxOutlined style={{ fontSize: 20, color: '#FA8C16' }} />
+                    <Typography.Text strong style={{ fontSize: 13, display: 'block', marginTop: 4, color: '#FA8C16' }}>
+                      单个或批量上传竞品素材
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginTop: 2 }}>
+                      系统会自动识别图片和视频，并拆分为截图、录屏和关键帧
+                    </Typography.Text>
+                  </div>
+                </Upload.Dragger>
+              )}
 
               {competitorFileList.length > 0 && (
                 <Space direction="vertical" size={8} style={{ width: '100%' }}>
@@ -560,19 +583,36 @@ export const NewAnalysisPage = () => {
                 <Typography.Title level={5} style={{ margin: 0 }}>我方页面</Typography.Title>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: ownFileList.length > 0 ? 12 : 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <Typography.Text style={{ fontSize: 13, color: '#595959' }}>我方页面素材</Typography.Text>
-                <Space size={8}>
-                  {ownFileList.length === 0 && (
-                    <Typography.Text style={{ fontSize: 12, color: '#FA8C16' }}>建议至少上传 1 张当前页面截图</Typography.Text>
-                  )}
+                {ownFileList.length > 0 && (
                   <Upload multiple accept="image/*,video/*" beforeUpload={handleOwnUpload} showUploadList={false}>
                     <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#1677FF', color: '#1677FF' }}>
                       上传素材
                     </Button>
                   </Upload>
-                </Space>
+                )}
               </div>
+
+              {ownFileList.length === 0 && (
+                <Upload.Dragger
+                  multiple
+                  accept="image/*,video/*"
+                  beforeUpload={handleOwnUpload}
+                  showUploadList={false}
+                  style={{ borderRadius: 8, borderColor: '#1677FF', background: '#F0F7FF', marginBottom: 0 }}
+                >
+                  <div style={{ padding: '10px 0' }}>
+                    <InboxOutlined style={{ fontSize: 20, color: '#1677FF' }} />
+                    <Typography.Text strong style={{ fontSize: 13, display: 'block', marginTop: 4, color: '#1677FF' }}>
+                      单个或批量上传我方页面素材
+                    </Typography.Text>
+                    <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginTop: 2 }}>
+                      交互与竞品素材一致，用于差异分析和方案转译
+                    </Typography.Text>
+                  </div>
+                </Upload.Dragger>
+              )}
 
               {ownFileList.length > 0 && (
                 <>
