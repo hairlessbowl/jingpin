@@ -1,9 +1,11 @@
-import { Form, Input, Select, Row, Col } from 'antd';
+import { Form, Input, Select, Row, Col, Skeleton, Alert } from 'antd';
 import type { FormInstance } from 'antd';
+import { ScanOutlined } from '@ant-design/icons';
 import { PAGE_TYPES } from '@/types/common';
 
 interface BriefFormProps {
   form: FormInstance;
+  recognizing?: boolean;
 }
 
 const COMPETITOR_OPTIONS = [
@@ -23,7 +25,32 @@ const DEVICE_OPTIONS = [
   { value: 'tablet', label: '平板' },
 ];
 
-export const BriefForm = ({ form }: BriefFormProps) => {
+export const BriefForm = ({ form, recognizing = false }: BriefFormProps) => {
+  if (recognizing) {
+    return (
+      <div>
+        <Alert
+          icon={<ScanOutlined />}
+          message="AI 正在识别素材内容..."
+          description="正在自动分析上传的截图/录屏，识别竞品信息和页面类型，请稍候"
+          type="info"
+          showIcon
+          style={{ marginBottom: 24, borderRadius: 8 }}
+        />
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col span={12}><Skeleton.Input active block /></Col>
+          <Col span={12}><Skeleton.Input active block /></Col>
+        </Row>
+        <Skeleton.Input active block style={{ marginBottom: 16 }} />
+        <Skeleton active paragraph={{ rows: 2 }} style={{ marginBottom: 16 }} />
+        <Row gutter={16}>
+          <Col span={12}><Skeleton.Input active block /></Col>
+          <Col span={12}><Skeleton.Input active block /></Col>
+        </Row>
+      </div>
+    );
+  }
+
   return (
     <Form form={form} layout="vertical" requiredMark={false}>
       <Row gutter={16}>
