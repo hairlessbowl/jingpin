@@ -576,8 +576,9 @@ export const NewAnalysisPage = () => {
                 </>
               )}
 
-              <Divider style={{ margin: '20px 0' }} />
+            </Card>
 
+            <Card style={{ borderRadius: 8, border: '1px solid #F0F0F0' }} bodyStyle={{ padding: 24 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1677FF', display: 'inline-block' }} />
                 <Typography.Title level={5} style={{ margin: 0 }}>我方页面</Typography.Title>
@@ -587,7 +588,7 @@ export const NewAnalysisPage = () => {
                 <Typography.Text style={{ fontSize: 13, color: '#595959' }}>我方页面素材</Typography.Text>
                 {ownFileList.length > 0 && (
                   <Upload multiple accept="image/*,video/*" beforeUpload={handleOwnUpload} showUploadList={false}>
-                    <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#1677FF', color: '#1677FF' }}>
+                    <Button icon={<UploadOutlined />} size="small">
                       上传素材
                     </Button>
                   </Upload>
@@ -728,7 +729,7 @@ export const NewAnalysisPage = () => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography.Text style={{ fontSize: 13, color: '#595959' }}>批量上传素材</Typography.Text>
             <Upload multiple accept="image/*,video/*" beforeUpload={handleMixedUpload} showUploadList={false}>
-              <Button icon={<UploadOutlined />} style={{ borderColor: '#722ED1', color: '#722ED1' }}>选择文件</Button>
+              <Button icon={<UploadOutlined />}>选择文件</Button>
             </Upload>
           </div>
 
