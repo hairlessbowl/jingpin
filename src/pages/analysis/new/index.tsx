@@ -5,17 +5,15 @@ import {
   Input, Select, Form, Divider, Row, Col, Badge, Modal, Alert, Image,
 } from 'antd';
 import {
-  InboxOutlined, FileImageOutlined, VideoCameraOutlined, DeleteOutlined,
+  FileImageOutlined, VideoCameraOutlined, DeleteOutlined,
   CheckCircleOutlined, LoadingOutlined, PlayCircleOutlined, PlusOutlined,
-  MergeCellsOutlined, SwapOutlined, DownOutlined, UpOutlined, EyeOutlined,
+  MergeCellsOutlined, SwapOutlined, DownOutlined, UpOutlined, UploadOutlined,
 } from '@ant-design/icons';
 import type { UploadFile, RcFile } from 'antd/es/upload/interface';
 
 import { PageContainer } from '@/components/PageContainer';
 import { createAnalysisTask } from '@/pages/analysis/services/analysisService';
 import { PAGE_TYPES } from '@/types/common';
-
-const { Dragger } = Upload;
 
 interface RecognitionResult {
   competitor: string;
@@ -174,44 +172,17 @@ const KeyframeStrip = ({
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
 
-  const handlePreview = (index: number) => {
-    setPreviewIndex(index);
-    setPreviewVisible(true);
-  };
-
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: collapsed ? 0 : 10,
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: collapsed ? 0 : 10 }}>
         <Space size={8}>
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: accentColor,
-              display: 'inline-block',
-            }}
-          />
-          <Typography.Text strong style={{ fontSize: 13 }}>
-            {label}
-          </Typography.Text>
-          <Badge
-            count={keyframes.length}
-            style={{ backgroundColor: accentColor, fontSize: 10 }}
-          />
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: accentColor, display: 'inline-block' }} />
+          <Typography.Text strong style={{ fontSize: 13 }}>{label}</Typography.Text>
+          <Badge count={keyframes.length} style={{ backgroundColor: accentColor, fontSize: 10 }} />
         </Space>
         <Space size={8}>
           {!collapsed && (
-            <Button size="small" icon={<PlusOutlined />} style={{ fontSize: 12 }}>
-              补充帧
-            </Button>
+            <Button size="small" icon={<PlusOutlined />} style={{ fontSize: 12 }}>补充帧</Button>
           )}
           <Button
             size="small"
@@ -227,108 +198,30 @@ const KeyframeStrip = ({
 
       {!collapsed && (
         <>
-          <Typography.Text
-            style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginBottom: 12 }}
-          >
+          <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginBottom: 12 }}>
             点击「补充帧」后选择一帧画面，系统会把它加入关键帧列表，适合补充 AI 抽帧遗漏的时帧。
           </Typography.Text>
-
           <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
             {keyframes.map((frame, index) => {
               const frameColor = KEYFRAME_COLORS[frame.changeType];
               return (
                 <div
                   key={index}
-                  style={{
-                    flexShrink: 0,
-                    width: 148,
-                    borderRadius: 8,
-                    border: `1px solid ${frameColor}33`,
-                    overflow: 'hidden',
-                    background: '#FAFAFA',
-                    cursor: 'pointer',
-                    transition: 'box-shadow 0.2s',
-                  }}
-                  onClick={() => handlePreview(index)}
+                  style={{ flexShrink: 0, width: 148, borderRadius: 8, border: `1px solid ${frameColor}33`, overflow: 'hidden', background: '#FAFAFA', cursor: 'pointer' }}
+                  onClick={() => { setPreviewIndex(index); setPreviewVisible(true); }}
                 >
-                  <div
-                    style={{
-                      height: 90,
-                      background: `linear-gradient(135deg, ${frameColor}22 0%, ${frameColor}0D 100%)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                    }}
-                  >
-                    <PlayCircleOutlined
-                      style={{ fontSize: 26, color: frameColor, opacity: 0.7 }}
-                    />
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'rgba(0,0,0,0)',
-                        transition: 'background 0.2s',
-                      }}
-                      className="keyframe-hover-overlay"
-                    >
-                      <EyeOutlined
-                        style={{
-                          fontSize: 20,
-                          color: '#fff',
-                          opacity: 0,
-                          transition: 'opacity 0.2s',
-                        }}
-                      />
-                    </div>
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 6,
-                        left: 6,
-                        background: 'rgba(0,0,0,0.55)',
-                        color: '#fff',
-                        fontSize: 10,
-                        padding: '1px 5px',
-                        borderRadius: 3,
-                        fontFamily: 'monospace',
-                      }}
-                    >
+                  <div style={{ height: 90, background: `linear-gradient(135deg, ${frameColor}22 0%, ${frameColor}0D 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                    <PlayCircleOutlined style={{ fontSize: 26, color: frameColor, opacity: 0.7 }} />
+                    <div style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: 10, padding: '1px 5px', borderRadius: 3, fontFamily: 'monospace' }}>
                       {frame.time}
                     </div>
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: 6,
-                        right: 6,
-                        background: frameColor,
-                        color: '#fff',
-                        fontSize: 10,
-                        padding: '1px 5px',
-                        borderRadius: 3,
-                      }}
-                    >
+                    <div style={{ position: 'absolute', bottom: 6, right: 6, background: frameColor, color: '#fff', fontSize: 10, padding: '1px 5px', borderRadius: 3 }}>
                       {KEYFRAME_CHANGE_LABELS[frame.changeType]}
                     </div>
                   </div>
                   <div style={{ padding: '8px 10px' }}>
-                    <Typography.Text
-                      strong
-                      style={{ fontSize: 12, display: 'block', marginBottom: 2 }}
-                    >
-                      {frame.label}
-                    </Typography.Text>
-                    <Typography.Text
-                      style={{ fontSize: 11, color: '#8C8C8C', lineHeight: '16px' }}
-                      ellipsis={{ tooltip: frame.description }}
-                    >
+                    <Typography.Text strong style={{ fontSize: 12, display: 'block', marginBottom: 2 }}>{frame.label}</Typography.Text>
+                    <Typography.Text style={{ fontSize: 11, color: '#8C8C8C', lineHeight: '16px' }} ellipsis={{ tooltip: frame.description }}>
                       {frame.description}
                     </Typography.Text>
                   </div>
@@ -336,21 +229,12 @@ const KeyframeStrip = ({
               );
             })}
           </div>
-
           <div style={{ display: 'none' }}>
             <Image.PreviewGroup
-              preview={{
-                visible: previewVisible,
-                current: previewIndex,
-                onVisibleChange: (visible) => setPreviewVisible(visible),
-              }}
+              preview={{ visible: previewVisible, current: previewIndex, onVisibleChange: (v) => setPreviewVisible(v) }}
             >
               {keyframes.map((frame, index) => (
-                <Image
-                  key={index}
-                  src={`https://picsum.photos/seed/${frame.time.replace(':', '')}/375/667`}
-                  alt={frame.label}
-                />
+                <Image key={index} src={`https://picsum.photos/seed/${frame.time.replace(':', '')}/375/667`} alt={frame.label} />
               ))}
             </Image.PreviewGroup>
           </div>
@@ -394,41 +278,25 @@ const FileCard = ({
             <FileImageOutlined style={{ color: accentColor, fontSize: 16 }} />
           )}
           <div>
-            <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>
-              {file.name}
-            </Typography.Text>
+            <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>{file.name}</Typography.Text>
             <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>
               {file.size ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : ''}
             </Typography.Text>
           </div>
-          <Tag color={isVideo ? 'purple' : 'blue'} style={{ fontSize: 11 }}>
-            {isVideo ? '录屏' : '截图'}
-          </Tag>
+          <Tag color={isVideo ? 'purple' : 'blue'} style={{ fontSize: 11 }}>{isVideo ? '录屏' : '截图'}</Tag>
         </Space>
-        <DeleteOutlined
-          style={{ color: '#FF4D4F', cursor: 'pointer', fontSize: 14 }}
-          onClick={() => onRemove(file.uid)}
-        />
+        <DeleteOutlined style={{ color: '#FF4D4F', cursor: 'pointer', fontSize: 14 }} onClick={() => onRemove(file.uid)} />
       </div>
 
       {isRecognizing && (
         <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
           <Spin indicator={<LoadingOutlined style={{ fontSize: 12, color: '#1677FF' }} />} />
-          <Typography.Text style={{ fontSize: 12, color: '#1677FF' }}>
-            AI 正在识别素材内容...
-          </Typography.Text>
+          <Typography.Text style={{ fontSize: 12, color: '#1677FF' }}>AI 正在识别素材内容...</Typography.Text>
         </div>
       )}
 
       {isRecognized && recognition && (
-        <div
-          style={{
-            marginTop: 8,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Space size={4}>
             <CheckCircleOutlined style={{ color: '#52C41A', fontSize: 12 }} />
             {'competitor' in recognition ? (
@@ -441,9 +309,7 @@ const FileCard = ({
               </Typography.Text>
             )}
           </Space>
-          <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>
-            置信度 {recognition.confidence}%
-          </Typography.Text>
+          <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>置信度 {recognition.confidence}%</Typography.Text>
         </div>
       )}
     </div>
@@ -469,7 +335,6 @@ export const NewAnalysisPage = () => {
 
   const [mixedModalOpen, setMixedModalOpen] = useState(false);
   const [mixedFiles, setMixedFiles] = useState<MixedFileItem[]>([]);
-
   const [submitting, setSubmitting] = useState(false);
   const pendingRef = useRef<MockRecognitionData | null>(null);
 
@@ -478,18 +343,9 @@ export const NewAnalysisPage = () => {
     setRecognizingUids((prev) => new Set(prev).add(uid));
     const recognized = pickRandom();
     pendingRef.current = recognized;
-
     setTimeout(() => {
-      setRecognizingUids((prev) => {
-        const next = new Set(prev);
-        next.delete(uid);
-        return next;
-      });
-      setRecognitionResults((prev) => {
-        const next = new Map(prev);
-        next.set(uid, recognized.fileRecognition);
-        return next;
-      });
+      setRecognizingUids((prev) => { const next = new Set(prev); next.delete(uid); return next; });
+      setRecognitionResults((prev) => { const next = new Map(prev); next.set(uid, recognized.fileRecognition); return next; });
       setCurrentRecognition(recognized);
       form.setFieldsValue({
         competitorName: recognized.competitorName,
@@ -503,19 +359,19 @@ export const NewAnalysisPage = () => {
     }, 1400 + Math.random() * 600);
   };
 
-  const handleCompetitorFilesChange = (newFiles: UploadFile[]) => {
-    const addedFiles = newFiles.filter((f) => !competitorFileList.some((e) => e.uid === f.uid));
-    setCompetitorFileList(newFiles);
-    addedFiles.forEach(triggerCompetitorRecognition);
+  const handleCompetitorUpload = (file: RcFile) => {
+    const newFile: UploadFile = { uid: `${Date.now()}-${file.name}`, name: file.name, status: 'done', originFileObj: file, size: file.size, type: file.type };
+    setCompetitorFileList((prev) => {
+      const next = [...prev, newFile];
+      return next;
+    });
+    triggerCompetitorRecognition(newFile);
+    return false;
   };
 
   const handleRemoveCompetitorFile = (uid: string) => {
     setCompetitorFileList((prev) => prev.filter((f) => f.uid !== uid));
-    setRecognitionResults((prev) => {
-      const next = new Map(prev);
-      next.delete(uid);
-      return next;
-    });
+    setRecognitionResults((prev) => { const next = new Map(prev); next.delete(uid); return next; });
   };
 
   const triggerOwnRecognition = (file: UploadFile) => {
@@ -524,137 +380,68 @@ export const NewAnalysisPage = () => {
     if (isVideo) setOwnHasVideo(true);
     setOwnRecognizingUids((prev) => new Set(prev).add(uid));
     const recognized = pickRandomOwnPage();
-
     setTimeout(() => {
-      setOwnRecognizingUids((prev) => {
-        const next = new Set(prev);
-        next.delete(uid);
-        return next;
-      });
-      setOwnRecognitionResults((prev) => {
-        const next = new Map(prev);
-        next.set(uid, recognized);
-        return next;
-      });
+      setOwnRecognizingUids((prev) => { const next = new Set(prev); next.delete(uid); return next; });
+      setOwnRecognitionResults((prev) => { const next = new Map(prev); next.set(uid, recognized); return next; });
     }, 1200 + Math.random() * 800);
   };
 
-  const handleOwnFilesChange = (newFiles: UploadFile[]) => {
-    const addedFiles = newFiles.filter((f) => !ownFileList.some((e) => e.uid === f.uid));
-    setOwnFileList(newFiles);
-    addedFiles.forEach(triggerOwnRecognition);
+  const handleOwnUpload = (file: RcFile) => {
+    const newFile: UploadFile = { uid: `${Date.now()}-${file.name}`, name: file.name, status: 'done', originFileObj: file, size: file.size, type: file.type };
+    setOwnFileList((prev) => [...prev, newFile]);
+    triggerOwnRecognition(newFile);
+    return false;
   };
 
   const handleRemoveOwnFile = (uid: string) => {
     setOwnFileList((prev) => {
       const next = prev.filter((f) => f.uid !== uid);
-      const stillHasVideo = next.some((f) => f.type?.startsWith('video/'));
-      setOwnHasVideo(stillHasVideo);
+      setOwnHasVideo(next.some((f) => f.type?.startsWith('video/')));
       return next;
     });
-    setOwnRecognitionResults((prev) => {
-      const next = new Map(prev);
-      next.delete(uid);
-      return next;
-    });
+    setOwnRecognitionResults((prev) => { const next = new Map(prev); next.delete(uid); return next; });
   };
 
   const handleMixedUpload = (file: RcFile) => {
     const newItem: MixedFileItem = {
-      file: {
-        uid: `${Date.now()}-${file.name}`,
-        name: file.name,
-        status: 'done',
-        originFileObj: file,
-        size: file.size,
-        type: file.type,
-      },
+      file: { uid: `${Date.now()}-${file.name}`, name: file.name, status: 'done', originFileObj: file, size: file.size, type: file.type },
       category: null,
       recognizing: true,
     };
-
     setMixedFiles((prev) => [...prev, newItem]);
     const isLikelyCompetitor = Math.random() > 0.4;
-    const delay = 1200 + Math.random() * 800;
-
     setTimeout(() => {
       if (isLikelyCompetitor) {
         const recognized = pickRandom();
-        setMixedFiles((prev) =>
-          prev.map((item) =>
-            item.file.uid === newItem.file.uid
-              ? { ...item, recognizing: false, category: 'competitor', competitorRecognition: recognized.fileRecognition }
-              : item
-          )
-        );
+        setMixedFiles((prev) => prev.map((item) => item.file.uid === newItem.file.uid ? { ...item, recognizing: false, category: 'competitor', competitorRecognition: recognized.fileRecognition } : item));
       } else {
         const recognized = pickRandomOwnPage();
-        setMixedFiles((prev) =>
-          prev.map((item) =>
-            item.file.uid === newItem.file.uid
-              ? { ...item, recognizing: false, category: 'own', ownRecognition: recognized }
-              : item
-          )
-        );
+        setMixedFiles((prev) => prev.map((item) => item.file.uid === newItem.file.uid ? { ...item, recognizing: false, category: 'own', ownRecognition: recognized } : item));
       }
-    }, delay);
-
+    }, 1200 + Math.random() * 800);
     return false;
   };
 
   const handleMixedConfirm = () => {
     const competitorItems = mixedFiles.filter((item) => item.category === 'competitor');
     const ownItems = mixedFiles.filter((item) => item.category === 'own');
-
-    const addedCompetitor = competitorItems
-      .map((item) => item.file)
-      .filter((f) => !competitorFileList.some((e) => e.uid === f.uid));
-    const addedOwn = ownItems
-      .map((item) => item.file)
-      .filter((f) => !ownFileList.some((e) => e.uid === f.uid));
-
-    setCompetitorFileList((prev) => [...prev, ...addedCompetitor]);
-    addedCompetitor.forEach(triggerCompetitorRecognition);
-
-    setOwnFileList((prev) => [...prev, ...addedOwn]);
-    addedOwn.forEach(triggerOwnRecognition);
-
+    competitorItems.forEach((item) => { setCompetitorFileList((prev) => [...prev, item.file]); triggerCompetitorRecognition(item.file); });
+    ownItems.forEach((item) => { setOwnFileList((prev) => [...prev, item.file]); triggerOwnRecognition(item.file); });
     setMixedModalOpen(false);
     setMixedFiles([]);
     message.success(`已导入 ${competitorItems.length} 个竞品素材、${ownItems.length} 个我方素材`);
-  };
-
-  const handleToggleMixedCategory = (uid: string) => {
-    setMixedFiles((prev) =>
-      prev.map((item) =>
-        item.file.uid === uid
-          ? { ...item, category: item.category === 'competitor' ? 'own' : 'competitor' }
-          : item
-      )
-    );
-  };
-
-  const handleRemoveMixedFile = (uid: string) => {
-    setMixedFiles((prev) => prev.filter((item) => item.file.uid !== uid));
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setSubmitting(true);
-
       const task = await createAnalysisTask({
         competitorName: values.competitorName,
         pageType: values.pageType,
         deviceType: values.deviceType,
-        brief: {
-          businessScenario: values.businessScenario,
-          targetUser: values.targetUser,
-          optimizationGoal: values.optimizationGoal,
-          currentProblem: values.currentProblem ?? '',
-        },
+        brief: { businessScenario: values.businessScenario, targetUser: values.targetUser, optimizationGoal: values.optimizationGoal, currentProblem: values.currentProblem ?? '' },
       });
-
       message.success('分析任务已提交，正在处理...');
       navigate(`/analysis/result/${task.id}`);
     } catch {
@@ -671,11 +458,7 @@ export const NewAnalysisPage = () => {
     <PageContainer
       title="新建分析"
       extra={
-        <Button
-          icon={<MergeCellsOutlined />}
-          onClick={() => { setMixedFiles([]); setMixedModalOpen(true); }}
-          style={{ borderColor: '#722ED1', color: '#722ED1', fontWeight: 500 }}
-        >
+        <Button icon={<MergeCellsOutlined />} onClick={() => { setMixedFiles([]); setMixedModalOpen(true); }} style={{ borderColor: '#722ED1', color: '#722ED1', fontWeight: 500 }}>
           混合上传
         </Button>
       }
@@ -684,182 +467,115 @@ export const NewAnalysisPage = () => {
         <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
             <Card style={{ borderRadius: 8, border: '1px solid #F0F0F0' }} bodyStyle={{ padding: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#FA8C16', display: 'inline-block' }} />
                 <Typography.Title level={5} style={{ margin: 0 }}>竞品素材</Typography.Title>
               </div>
 
               <Row gutter={12} style={{ marginBottom: 16 }}>
                 <Col span={12}>
-                  <Form.Item
-                    name="competitorName"
-                    label="竞品名称"
-                    rules={[{ required: true, message: '请选择竞品' }]}
-                    style={{ marginBottom: 0 }}
-                  >
+                  <Form.Item name="competitorName" label="竞品名称" rules={[{ required: true, message: '请选择竞品' }]} style={{ marginBottom: 0 }}>
                     <Select showSearch placeholder="竞品 A" options={COMPETITOR_OPTIONS} allowClear />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item
-                    name="pageType"
-                    label="页面类型"
-                    rules={[{ required: true, message: '请选择页面类型' }]}
-                    style={{ marginBottom: 0 }}
-                  >
+                  <Form.Item name="pageType" label="页面类型" rules={[{ required: true, message: '请选择页面类型' }]} style={{ marginBottom: 0 }}>
                     <Select placeholder="任务页" options={PAGE_TYPES.map((t) => ({ value: t, label: t }))} />
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Typography.Text style={{ fontSize: 13, color: '#595959', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                <PlayCircleOutlined style={{ color: '#FA8C16' }} />
-                竞品截图 / 录屏
-              </Typography.Text>
-
-              <Dragger
-                multiple
-                accept="image/*,video/*"
-                fileList={competitorFileList}
-                beforeUpload={(file) => {
-                  const newFile: UploadFile = {
-                    uid: `${Date.now()}-${file.name}`,
-                    name: file.name,
-                    status: 'done',
-                    originFileObj: file as RcFile,
-                    size: file.size,
-                    type: file.type,
-                  };
-                  handleCompetitorFilesChange([...competitorFileList, newFile]);
-                  return false;
-                }}
-                showUploadList={false}
-                style={{ borderRadius: 8, borderColor: '#FA8C16', background: '#FFFBF5' }}
-              >
-                <div style={{ padding: '20px 0' }}>
-                  <InboxOutlined style={{ fontSize: 32, color: '#FA8C16' }} />
-                  <Typography.Text strong style={{ fontSize: 14, display: 'block', marginTop: 8, color: '#FA8C16' }}>
-                    单个或批量上传竞品素材
-                  </Typography.Text>
-                  <Typography.Text style={{ color: '#8C8C8C', fontSize: 12 }}>
-                    系统会自动识别图片和视频，并拆分为截图、录屏和关键帧
-                  </Typography.Text>
-                </div>
-              </Dragger>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: competitorFileList.length > 0 ? 12 : 0 }}>
+                <Typography.Text style={{ fontSize: 13, color: '#595959' }}>竞品截图 / 录屏</Typography.Text>
+                <Upload multiple accept="image/*,video/*" beforeUpload={handleCompetitorUpload} showUploadList={false}>
+                  <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#FA8C16', color: '#FA8C16' }}>
+                    上传素材
+                  </Button>
+                </Upload>
+              </div>
 
               {competitorFileList.length > 0 && (
-                <div style={{ marginTop: 12 }}>
-                  <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginBottom: 8 }}>
-                    已识别 {competitorFileList.length} 个竞品素材
-                  </Typography.Text>
-                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                    {competitorFileList.map((file) => (
-                      <FileCard
-                        key={file.uid}
-                        file={file}
-                        recognition={recognitionResults.get(file.uid)}
-                        isRecognizing={recognizingUids.has(file.uid)}
-                        onRemove={handleRemoveCompetitorFile}
-                        accentColor="#FA8C16"
-                      />
-                    ))}
-                  </Space>
-                </div>
+                <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                  {competitorFileList.map((file) => (
+                    <FileCard
+                      key={file.uid}
+                      file={file}
+                      recognition={recognitionResults.get(file.uid)}
+                      isRecognizing={recognizingUids.has(file.uid)}
+                      onRemove={handleRemoveCompetitorFile}
+                      accentColor="#FA8C16"
+                    />
+                  ))}
+                </Space>
               )}
-            </Card>
 
-            {currentRecognition && (
-              <Card style={{ borderRadius: 8, border: '1px solid #F0F0F0' }} bodyStyle={{ padding: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                  <Space size={8}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#52C41A', display: 'inline-block' }} />
-                    <Typography.Title level={5} style={{ margin: 0 }}>素材识别结果</Typography.Title>
-                  </Space>
-                  <Tag color="success" style={{ fontSize: 12 }}>
-                    <CheckCircleOutlined style={{ marginRight: 4 }} />
-                    已识别
-                  </Tag>
-                </div>
-
-                <div style={{ padding: '14px 16px', background: '#F8FAFF', borderRadius: 8, border: '1px solid #D6E4FF', marginBottom: 20 }}>
-                  <Space size={14} align="start">
-                    <div style={{ width: 56, height: 56, borderRadius: 8, background: 'linear-gradient(135deg, #E6F4FF 0%, #BAE0FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <VideoCameraOutlined style={{ fontSize: 24, color: '#1677FF' }} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <Typography.Text strong style={{ fontSize: 13 }}>视频识别</Typography.Text>
-                        <Tag color="blue" style={{ fontSize: 11 }}>{currentRecognition.fileRecognition.competitor}</Tag>
-                        <Tag color="purple" style={{ fontSize: 11 }}>{currentRecognition.fileRecognition.flowOrPage}</Tag>
-                      </div>
-                      <Typography.Text style={{ fontSize: 12, color: '#595959', display: 'block', marginBottom: 8 }}>
-                        已扫描录屏，识别到 <strong>{currentRecognition.keyframes.length}</strong> 个关键帧，置信度{' '}
-                        <strong style={{ color: '#1677FF' }}>{currentRecognition.fileRecognition.confidence}%</strong>
-                      </Typography.Text>
-                      <Space size={4} wrap>
-                        <Tag style={{ fontSize: 11 }}>强变化：页面切换 / 大面积弹窗</Tag>
-                        <Tag style={{ fontSize: 11 }}>中变化：局部内容 / 状态切换</Tag>
+              {currentRecognition && (
+                <>
+                  <div style={{ margin: '20px 0 16px', padding: '14px 16px', background: '#F8FAFF', borderRadius: 8, border: '1px solid #D6E4FF' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <Space size={8}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#52C41A', display: 'inline-block' }} />
+                        <Typography.Text strong style={{ fontSize: 13 }}>素材识别结果</Typography.Text>
                       </Space>
+                      <Tag color="success" style={{ fontSize: 11 }}>
+                        <CheckCircleOutlined style={{ marginRight: 3 }} />已识别
+                      </Tag>
                     </div>
-                  </Space>
-                </div>
+                    <Space size={12} align="start">
+                      <div style={{ width: 48, height: 48, borderRadius: 8, background: 'linear-gradient(135deg, #E6F4FF 0%, #BAE0FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <VideoCameraOutlined style={{ fontSize: 20, color: '#1677FF' }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                          <Typography.Text strong style={{ fontSize: 13 }}>视频识别</Typography.Text>
+                          <Tag color="blue" style={{ fontSize: 11 }}>{currentRecognition.fileRecognition.competitor}</Tag>
+                          <Tag color="purple" style={{ fontSize: 11 }}>{currentRecognition.fileRecognition.flowOrPage}</Tag>
+                        </div>
+                        <Typography.Text style={{ fontSize: 12, color: '#595959', display: 'block', marginBottom: 6 }}>
+                          已扫描录屏，识别到 <strong>{currentRecognition.keyframes.length}</strong> 个关键帧，置信度{' '}
+                          <strong style={{ color: '#1677FF' }}>{currentRecognition.fileRecognition.confidence}%</strong>
+                        </Typography.Text>
+                        <Space size={4} wrap>
+                          <Tag style={{ fontSize: 11 }}>强变化：页面切换 / 大面积弹窗</Tag>
+                          <Tag style={{ fontSize: 11 }}>中变化：局部内容 / 状态切换</Tag>
+                        </Space>
+                      </div>
+                    </Space>
+                  </div>
 
-                <KeyframeStrip
-                  keyframes={currentRecognition.keyframes}
-                  collapsed={competitorKeyframesCollapsed}
-                  onToggle={() => setCompetitorKeyframesCollapsed((v) => !v)}
-                  accentColor="#FA8C16"
-                  label="录屏关键帧"
-                />
-              </Card>
-            )}
+                  <KeyframeStrip
+                    keyframes={currentRecognition.keyframes}
+                    collapsed={competitorKeyframesCollapsed}
+                    onToggle={() => setCompetitorKeyframesCollapsed((v) => !v)}
+                    accentColor="#FA8C16"
+                    label="录屏关键帧"
+                  />
+                </>
+              )}
 
-            <Card style={{ borderRadius: 8, border: '1px solid #F0F0F0' }} bodyStyle={{ padding: 24 }}>
+              <Divider style={{ margin: '20px 0' }} />
+
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1677FF', display: 'inline-block' }} />
                 <Typography.Title level={5} style={{ margin: 0 }}>我方页面</Typography.Title>
               </div>
 
-              <Typography.Text style={{ fontSize: 13, color: '#595959', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                <FileImageOutlined style={{ color: '#1677FF' }} />
-                我方页面素材
-              </Typography.Text>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: ownFileList.length > 0 ? 12 : 0 }}>
+                <Typography.Text style={{ fontSize: 13, color: '#595959' }}>我方页面素材</Typography.Text>
+                <Space size={8}>
+                  {ownFileList.length === 0 && (
+                    <Typography.Text style={{ fontSize: 12, color: '#FA8C16' }}>建议至少上传 1 张当前页面截图</Typography.Text>
+                  )}
+                  <Upload multiple accept="image/*,video/*" beforeUpload={handleOwnUpload} showUploadList={false}>
+                    <Button icon={<UploadOutlined />} size="small" style={{ borderColor: '#1677FF', color: '#1677FF' }}>
+                      上传素材
+                    </Button>
+                  </Upload>
+                </Space>
+              </div>
 
-              <Dragger
-                multiple
-                accept="image/*,video/*"
-                fileList={ownFileList}
-                beforeUpload={(file) => {
-                  const newFile: UploadFile = {
-                    uid: `${Date.now()}-${file.name}`,
-                    name: file.name,
-                    status: 'done',
-                    originFileObj: file as RcFile,
-                    size: file.size,
-                    type: file.type,
-                  };
-                  handleOwnFilesChange([...ownFileList, newFile]);
-                  return false;
-                }}
-                showUploadList={false}
-                style={{ borderRadius: 8, borderColor: '#1677FF', background: '#F0F7FF' }}
-              >
-                <div style={{ padding: '20px 0' }}>
-                  <FileImageOutlined style={{ fontSize: 28, color: '#1677FF' }} />
-                  <Typography.Text strong style={{ fontSize: 13, display: 'block', marginTop: 8, color: '#1677FF' }}>
-                    单个或批量上传我方页面素材
-                  </Typography.Text>
-                  <Typography.Text style={{ color: '#8C8C8C', fontSize: 12 }}>
-                    交互与竞品素材一致，用于差异分析和方案转译
-                  </Typography.Text>
-                </div>
-              </Dragger>
-
-              {ownFileList.length > 0 ? (
-                <div style={{ marginTop: 12 }}>
-                  <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginBottom: 8 }}>
-                    已上传 {ownFileList.length} 个我方素材
-                  </Typography.Text>
+              {ownFileList.length > 0 && (
+                <>
                   <Space direction="vertical" size={8} style={{ width: '100%' }}>
                     {ownFileList.map((file) => (
                       <FileCard
@@ -874,7 +590,7 @@ export const NewAnalysisPage = () => {
                   </Space>
 
                   {ownHasVideo && ownRecognizingUids.size === 0 && (
-                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #F0F0F0' }}>
+                    <div style={{ marginTop: 16 }}>
                       <KeyframeStrip
                         keyframes={MOCK_OWN_KEYFRAMES}
                         collapsed={ownKeyframesCollapsed}
@@ -884,12 +600,7 @@ export const NewAnalysisPage = () => {
                       />
                     </div>
                   )}
-                </div>
-              ) : (
-                <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>未上传我方素材</Typography.Text>
-                  <Typography.Text style={{ fontSize: 12, color: '#FA8C16' }}>建议至少上传 1 张当前页面截图</Typography.Text>
-                </div>
+                </>
               )}
             </Card>
           </div>
@@ -902,8 +613,7 @@ export const NewAnalysisPage = () => {
               </div>
               {currentRecognition ? (
                 <Typography.Text style={{ fontSize: 12, color: '#52C41A', display: 'block', marginBottom: 12 }}>
-                  <CheckCircleOutlined style={{ marginRight: 4 }} />
-                  已根据素材自动识别，可继续编辑修改。
+                  <CheckCircleOutlined style={{ marginRight: 4 }} />已根据素材自动识别，可继续编辑修改。
                 </Typography.Text>
               ) : (
                 <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', display: 'block', marginBottom: 12 }}>
@@ -911,80 +621,34 @@ export const NewAnalysisPage = () => {
                 </Typography.Text>
               )}
 
-              <Form.Item
-                name="businessScenario"
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>业务场景</Typography.Text>}
-                style={{ marginBottom: 12 }}
-              >
+              <Form.Item name="businessScenario" label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>业务场景</Typography.Text>} style={{ marginBottom: 12 }}>
                 <Input.TextArea rows={2} placeholder="竞品页面流程体验优化" style={{ fontSize: 13 }} />
               </Form.Item>
-
-              <Form.Item
-                name="targetUser"
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>目标用户</Typography.Text>}
-                style={{ marginBottom: 12 }}
-              >
+              <Form.Item name="targetUser" label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>目标用户</Typography.Text>} style={{ marginBottom: 12 }}>
                 <Select placeholder="选择目标用户" options={TARGET_USER_OPTIONS} style={{ fontSize: 13 }} />
               </Form.Item>
-
-              <Form.Item
-                name="optimizationGoal"
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>优化目标</Typography.Text>}
-                style={{ marginBottom: 12 }}
-              >
+              <Form.Item name="optimizationGoal" label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>优化目标</Typography.Text>} style={{ marginBottom: 12 }}>
                 <Input.TextArea rows={3} placeholder="基于上传素材识别页面结构、流程节点和关键状态，输出借鉴点与改版建议。" style={{ fontSize: 13 }} />
               </Form.Item>
-
-              <Form.Item
-                name="currentProblem"
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>当前问题</Typography.Text>}
-                style={{ marginBottom: 12 }}
-              >
+              <Form.Item name="currentProblem" label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>当前问题</Typography.Text>} style={{ marginBottom: 12 }}>
                 <Input.TextArea rows={3} placeholder="系统已识别素材类型和画面变化，建议结合业务目标..." style={{ fontSize: 13 }} />
               </Form.Item>
 
               <Divider style={{ margin: '12px 0' }} />
 
-              <Form.Item
-                name="deviceType"
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>设备类型</Typography.Text>}
-                initialValue="mobile"
-                style={{ marginBottom: 12 }}
-              >
+              <Form.Item name="deviceType" label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>设备类型</Typography.Text>} initialValue="mobile" style={{ marginBottom: 12 }}>
                 <Select options={DEVICE_OPTIONS} style={{ fontSize: 13 }} />
               </Form.Item>
-
-              <Form.Item
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>输出偏好</Typography.Text>}
-                style={{ marginBottom: 12 }}
-              >
-                <Select
-                  defaultValue="增强改版"
-                  options={[
-                    { value: '增强改版', label: '增强改版' },
-                    { value: '竞品拆解', label: '竞品拆解' },
-                    { value: '差异分析', label: '差异分析' },
-                  ]}
-                  style={{ fontSize: 13 }}
-                />
+              <Form.Item label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>输出偏好</Typography.Text>} style={{ marginBottom: 12 }}>
+                <Select defaultValue="增强改版" options={[{ value: '增强改版', label: '增强改版' }, { value: '竞品拆解', label: '竞品拆解' }, { value: '差异分析', label: '差异分析' }]} style={{ fontSize: 13 }} />
               </Form.Item>
-
-              <Form.Item
-                label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>业务约束</Typography.Text>}
-                style={{ marginBottom: 16 }}
-              >
+              <Form.Item label={<Typography.Text style={{ fontSize: 12, color: '#595959' }}>业务约束</Typography.Text>} style={{ marginBottom: 16 }}>
                 <Input.TextArea rows={2} placeholder="不改变有关规则，优化信息表达和页面结构。" style={{ fontSize: 13 }} />
               </Form.Item>
 
               <div style={{ display: 'flex', gap: 8 }}>
                 <Button style={{ flex: 1 }} onClick={() => navigate('/')}>保存草稿</Button>
-                <Button
-                  type="primary"
-                  style={{ flex: 1, background: '#FA8C16', borderColor: '#FA8C16' }}
-                  loading={submitting}
-                  disabled={competitorFileList.length === 0 || hasAnyRecognizing}
-                  onClick={handleSubmit}
-                >
+                <Button type="primary" style={{ flex: 1, background: '#FA8C16', borderColor: '#FA8C16' }} loading={submitting} disabled={competitorFileList.length === 0 || hasAnyRecognizing} onClick={handleSubmit}>
                   开始分析
                 </Button>
               </div>
@@ -998,29 +662,20 @@ export const NewAnalysisPage = () => {
           <Space size={8}>
             <MergeCellsOutlined style={{ color: '#722ED1' }} />
             <span>混合上传</span>
-            <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', fontWeight: 400 }}>
-              批量上传后 AI 自动识别分类为竞品素材或我方素材
-            </Typography.Text>
+            <Typography.Text style={{ fontSize: 12, color: '#8C8C8C', fontWeight: 400 }}>批量上传后 AI 自动识别分类</Typography.Text>
           </Space>
         }
         open={mixedModalOpen}
         onCancel={() => { setMixedModalOpen(false); setMixedFiles([]); }}
-        width={680}
+        width={640}
         footer={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography.Text style={{ fontSize: 12, color: '#8C8C8C' }}>
-              竞品素材 {mixedFiles.filter((f) => f.category === 'competitor').length} 个 ·
-              我方素材 {mixedFiles.filter((f) => f.category === 'own').length} 个 ·
-              识别中 {mixedFiles.filter((f) => f.recognizing).length} 个
+              竞品 {mixedFiles.filter((f) => f.category === 'competitor').length} 个 · 我方 {mixedFiles.filter((f) => f.category === 'own').length} 个 · 识别中 {mixedFiles.filter((f) => f.recognizing).length} 个
             </Typography.Text>
             <Space>
               <Button onClick={() => { setMixedModalOpen(false); setMixedFiles([]); }}>取消</Button>
-              <Button
-                type="primary"
-                disabled={mixedFiles.length === 0 || mixedStillRecognizing}
-                onClick={handleMixedConfirm}
-                style={{ background: '#722ED1', borderColor: '#722ED1' }}
-              >
+              <Button type="primary" disabled={mixedFiles.length === 0 || mixedStillRecognizing} onClick={handleMixedConfirm} style={{ background: '#722ED1', borderColor: '#722ED1' }}>
                 {mixedStillRecognizing ? '识别中...' : `确认导入 (${mixedFiles.length} 个)`}
               </Button>
             </Space>
@@ -1028,30 +683,14 @@ export const NewAnalysisPage = () => {
         }
       >
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
-          <Alert
-            type="info"
-            showIcon
-            message="上传后 AI 将自动识别每个文件属于竞品素材还是我方素材，识别结果可手动调整。"
-            style={{ borderRadius: 6 }}
-          />
+          <Alert type="info" showIcon message="上传后 AI 将自动识别每个文件属于竞品素材还是我方素材，识别结果可手动调整。" style={{ borderRadius: 6 }} />
 
-          <Dragger
-            multiple
-            accept="image/*,video/*"
-            beforeUpload={handleMixedUpload}
-            showUploadList={false}
-            style={{ borderRadius: 8, borderColor: '#722ED1', background: '#FAF5FF' }}
-          >
-            <div style={{ padding: '16px 0' }}>
-              <MergeCellsOutlined style={{ fontSize: 28, color: '#722ED1' }} />
-              <Typography.Text strong style={{ fontSize: 13, display: 'block', marginTop: 8, color: '#722ED1' }}>
-                拖拽或点击批量上传素材
-              </Typography.Text>
-              <Typography.Text style={{ color: '#8C8C8C', fontSize: 12 }}>
-                支持图片和视频，AI 将自动识别分类
-              </Typography.Text>
-            </div>
-          </Dragger>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography.Text style={{ fontSize: 13, color: '#595959' }}>批量上传素材</Typography.Text>
+            <Upload multiple accept="image/*,video/*" beforeUpload={handleMixedUpload} showUploadList={false}>
+              <Button icon={<UploadOutlined />} style={{ borderColor: '#722ED1', color: '#722ED1' }}>选择文件</Button>
+            </Upload>
+          </div>
 
           {mixedFiles.length > 0 && (
             <div>
@@ -1063,7 +702,6 @@ export const NewAnalysisPage = () => {
                   const isVideo = item.file.type?.startsWith('video/');
                   const categoryColor = item.category === 'competitor' ? '#FA8C16' : '#1677FF';
                   const categoryLabel = item.category === 'competitor' ? '竞品素材' : '我方素材';
-
                   return (
                     <div
                       key={item.file.uid}
@@ -1077,21 +715,12 @@ export const NewAnalysisPage = () => {
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Space size={8}>
-                          {isVideo ? (
-                            <VideoCameraOutlined style={{ color: '#722ED1', fontSize: 16 }} />
-                          ) : (
-                            <FileImageOutlined style={{ color: '#595959', fontSize: 16 }} />
-                          )}
+                          {isVideo ? <VideoCameraOutlined style={{ color: '#722ED1', fontSize: 16 }} /> : <FileImageOutlined style={{ color: '#595959', fontSize: 16 }} />}
                           <div>
-                            <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>
-                              {item.file.name}
-                            </Typography.Text>
-                            <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>
-                              {item.file.size ? `${(item.file.size / 1024 / 1024).toFixed(2)} MB` : ''}
-                            </Typography.Text>
+                            <Typography.Text style={{ fontSize: 13, color: '#262626', display: 'block' }}>{item.file.name}</Typography.Text>
+                            <Typography.Text style={{ fontSize: 11, color: '#8C8C8C' }}>{item.file.size ? `${(item.file.size / 1024 / 1024).toFixed(2)} MB` : ''}</Typography.Text>
                           </div>
                         </Space>
-
                         <Space size={8}>
                           {item.recognizing ? (
                             <Space size={4}>
@@ -1100,26 +729,13 @@ export const NewAnalysisPage = () => {
                             </Space>
                           ) : (
                             <>
-                              <Tag color={item.category === 'competitor' ? 'orange' : 'blue'} style={{ fontSize: 11, margin: 0 }}>
-                                {categoryLabel}
-                              </Tag>
-                              <Button
-                                size="small"
-                                icon={<SwapOutlined />}
-                                style={{ fontSize: 11, color: categoryColor, borderColor: categoryColor }}
-                                onClick={() => handleToggleMixedCategory(item.file.uid)}
-                              >
-                                切换
-                              </Button>
+                              <Tag color={item.category === 'competitor' ? 'orange' : 'blue'} style={{ fontSize: 11, margin: 0 }}>{categoryLabel}</Tag>
+                              <Button size="small" icon={<SwapOutlined />} style={{ fontSize: 11, color: categoryColor, borderColor: categoryColor }} onClick={() => setMixedFiles((prev) => prev.map((f) => f.file.uid === item.file.uid ? { ...f, category: f.category === 'competitor' ? 'own' : 'competitor' } : f))}>切换</Button>
                             </>
                           )}
-                          <DeleteOutlined
-                            style={{ color: '#FF4D4F', cursor: 'pointer', fontSize: 13 }}
-                            onClick={() => handleRemoveMixedFile(item.file.uid)}
-                          />
+                          <DeleteOutlined style={{ color: '#FF4D4F', cursor: 'pointer', fontSize: 13 }} onClick={() => setMixedFiles((prev) => prev.filter((f) => f.file.uid !== item.file.uid))} />
                         </Space>
                       </div>
-
                       {!item.recognizing && item.category === 'competitor' && item.competitorRecognition && (
                         <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                           <CheckCircleOutlined style={{ color: '#52C41A', fontSize: 11 }} />
@@ -1128,7 +744,6 @@ export const NewAnalysisPage = () => {
                           </Typography.Text>
                         </div>
                       )}
-
                       {!item.recognizing && item.category === 'own' && item.ownRecognition && (
                         <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
                           <CheckCircleOutlined style={{ color: '#52C41A', fontSize: 11 }} />
